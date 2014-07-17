@@ -1,0 +1,385 @@
+[	
+	{	
+		"Id":1,
+		"Name":"the first study",
+		"Task":
+			[
+				{
+		            "Id": 1,
+		            "Name": "Detecting Using Phone",
+		            "Description": "Detecting when users tilt the phone, and ask them why they use the phone (e.g. for checking time).",
+		            "Timestamp_String": "2014-03-06 11:41:37 UTC",
+		            "Created_Time":"1394106097000",
+		            "Start_Time":"1394106097000",
+		            "End_Time":"1404259199"
+		        },
+		    
+		        {
+		            "Id": 2,
+		            "Name": "Detecting at home",
+		            "Description": "Deliver surveys to users if they are at home at night (by default, 9 pm)",
+		            "Timestamp_String": "2014-03-06 11:41:37 UTC",
+		            "Created_Time":"1394106097000",
+		            "Start_Time":"1394106097000",
+		            "End_Time":"1404259199"
+		        },
+		    
+		        {
+		            "Id": 3,
+		            "Name": "Reporting transportation after vehicle",
+		            "Description": "Deliver surveys to users 5 minutes after they are off vehicle",
+		            "Timestamp_String": "2014-03-06 11:41:37 UTC",
+		            "Created_Time":"1394106097000",
+		            "Start_Time":"1394106097000",
+		            "End_Time":"1404259199"
+		        }
+			
+			
+			], 
+
+		"Configuration":
+		{	
+			"Id": 1,
+			"Version": 1,
+			"Name": "Configuration1",
+			"Content":
+			{
+
+
+
+				"Event": 
+				[
+					{
+						"Id": 1,
+						"Task_id": 1,
+						"Name": "Monitoring tilting",
+						"Description":"NA",
+						"Condition": 
+						[ 
+							{
+								
+								"Type": "activity_type",
+								"Relationship": "string_equal_to",
+								"TargetValue": "tilting",
+					
+								"Constraint": [
+									{
+										"Type": "recency",
+										"Relationship": "<=", 
+										"TargetValue": "5" 
+									}
+								]
+							} 
+						]
+					}, 
+						
+					{
+						"Id": 2,
+						"Task_id": 2,
+						"Name": "Monitoring at home",
+						"Description":"NA",
+						"Condition": 
+						[
+							{
+								"Type": "distance_to",
+								"Lat":42.279469, 
+								"Lng":-83.740973,
+								"Relationship": "<",
+								"TargetValue": "1000",
+					
+								"Constraint": 
+								[
+									{
+										"Type": "duration",
+										"Relationship": ">=", 
+										"TargetValue": "60" 
+									},
+									{
+										"Type": "recency",
+										"Relationship": "<=", 
+										"TargetValue": "120" 
+									}
+								]
+								
+							}
+						]
+					}		
+					
+				],
+			
+				"Action":
+				[
+					{
+						"Id": 4,
+						"Continuity":
+						{
+							"Rate": 3,
+							"Duration": -1
+						},
+						"Execution_style":"one-time",
+						"Type": "monitoring_events",
+						"Monitoring_events":"1",
+						"Control":{
+							"Start":
+							[
+								{
+									"Launch": "app_start"
+								}
+
+							]						
+						}
+
+					}, 
+
+					{
+						"Id": 5,
+						"Execution_style":"repeated",
+						"Type": "monitoring_events",
+						"Monitoring_events":"2",
+						"Control":{
+							"Start":
+							[
+								{
+									"Launch": "schedule",
+									"Schedule":
+									{
+										"Sample_method":"fixed_interval",
+										"Sample_interval":120,
+										"Sample_endAt": "21:00"				
+									}
+								}
+							]
+						}
+						
+					}, 
+
+					{
+						"Id": 1,
+						"Execution_style":"one-time",
+						"Type": "questionnaire",
+						"Questionnaire_id":1,		
+						"Control":{
+							"Start":
+							[
+								{
+									"Launch": "triggered",
+									"Trigger": 
+									{
+										"Class":"Event",
+										"Id":1,
+										"Sampling_rate": 1
+									},	
+									"Schedule":
+									{
+										"Sample_method":"random",
+										"Sample_delay": 5,
+										"Sample_duration": 60,
+										"Sample_count":1 
+									}
+								}
+							
+							]				
+						},						
+						"Notification":
+						{
+							"Title": "Where did you put your phone?",
+							"Message": "Please tell us where you just placed your phone"
+						}
+
+					}, 
+
+					{
+						"Id": 2,
+						"Execution_style":"repeated",
+						"Type": "questionnaire",
+						"Questionnaire_id":2,
+						"Control":{
+							"Start":
+							[
+								{
+									"Launch": "triggered",
+									"Trigger": 
+									{
+										"Class":"Event",
+										"Id":2,
+										"Sampling_rate": 1
+									},
+									"Schedule":
+									{
+										"Sample_method":"random_with_minimum_interval",
+										"Sample_delay": 1,
+										"Sample_min_interval": 3600,
+										"Sample_endAt": "21:00",
+										"Sample_count":4 
+									}
+								}
+							
+							]
+						
+						},		
+						
+						"Notification":
+						{
+							"Title": "What item are you carrying?",
+							"Message": "Please tab to report what items you are carrying."
+						}
+					}, 
+
+					{
+						"Id": 3,
+						"Execution_style":"repeated",
+						"Type": "questionnaire",
+						"Questionnaire_id":3,
+						"Control":{
+							"Start":
+							[
+								{
+									"Launch": "schedule",
+									"Schedule":
+									{
+										"Sample_method":"fixed_time_of_day",
+										"Time_of_day": "18:40"
+									}
+								}					
+							]
+						},	
+						
+						"Notification":
+						{
+							"Title": "What is the last time you smoked?",
+							"Message": "Please tab to answer the questionnaire."
+						}
+					} 
+
+
+				],
+
+				"Questionnaire":
+				[
+					{
+						"Id": 1,
+						"Title": "Where do you place your phone?",
+						"Description":"Please answer the following questions.",
+						"Questions":
+						[
+							{
+								"Index": 1,
+								"Type":"textbox",
+								"Question_text": "Where are you now?"					
+							},
+
+							{
+								"Index": 2,
+								"Type":"multichoice_one_answer",
+								"Has_other_field":true,
+								"Question_text": "Where did you just place your phone?",	
+								"Option":
+								[
+									{
+										"Option_text":"Desk/Table"
+									},
+									{
+										"Option_text": "Pocket"
+									},
+									{
+										"Option_text": "Bagpack/handbag"
+									},
+									{
+										"Option_text": "Other"
+									}
+
+								]
+
+
+							},
+
+							{
+								"Index": 3,
+								"Type":"multichoice_multiple_answer",
+								"Question_text": "What is/are the reason(s) that you place your phone there?",
+								"Option":
+								[
+									{
+										"Option_text":"It's easier to notice notifications."
+									},
+									{
+										"Option_text": "It's convenient to grab."
+									},
+									{
+										"Option_text": "It's less disturbing."
+									}
+								]					
+							}
+
+						]
+
+					},
+
+					{
+						"Id": 2,
+						"Title": "What were you carrying?",
+						"Description":"Please tell us what personal item(s) you were carrying 5 minutes ago",
+						"Questions":
+						[
+							{
+								"Index": 1,
+								"Type":"textbox",
+								"Question_text": "Which room are you in?"					
+							},
+
+							{
+								"Index": 2,
+								"Type":"textbox",
+								"Question_text": "How long have you stayed in the room?"					
+							},
+
+							{
+								"Index": 3,
+								"Type":"multichoice_multiple_answer",
+								"Has_other_field":true,
+								"Question_text": "Which of the following items are you carrying?",
+								"Option":
+								[
+									{
+										"Option_text":"Mobile phone (before you answer this questionnaire)"
+									},
+									{
+										"Option_text":"Watch"
+									},
+									{
+										"Option_text": "Wallet"
+									},
+									{
+										"Option_text":"health-tracking devices"
+									}
+
+								]					
+							}
+						]
+
+					},
+
+					{
+						Id": 3,
+						"Title": "What's the last time you smoke?",
+						"Description":"Please tell us what is the last time you smoke",
+						"Questions":
+						[
+							{
+								"Index": 1,
+								"Type":"textbox",
+								"Question_text": "Which room are you in?"					
+							}							
+						]
+
+					}
+
+				]
+
+			}
+			
+
+		}
+		
+	}
+]
